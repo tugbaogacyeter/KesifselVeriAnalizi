@@ -1,0 +1,115 @@
+#Öncelikle rastgele veri oluşturularak analiz gerçekleştirilecektir.
+# Rastgele veri oluşturma için kütüphane
+install.packages("MASS")
+library(MASS)
+
+
+# Örneklem büyüklüğü
+n <- 1000
+
+# Serbestlik dereceleri
+d1 <- 5
+d2 <- 10
+
+# F dağılımlı veri seti oluşturma
+f_dagilim <- rf(n, d1, d2)
+# Veri çerçevesi oluşturma
+veri <- data.frame(F_Dagilimi = f_dagilim)
+
+# Veri çerçevesinin ilk birkaç gözlemini görüntüleme
+head(veri)
+
+# Oluşturulan F dağılımlı veri setinin özet istatistiklerini görüntüleme
+summary(f_dagilim)
+
+# Eksik verilerin bulunması
+eksik_veriler <- is.na(veri$F_Dagilimi)
+print("Eksik veri sayısı:")
+print(sum(eksik_veriler))
+
+# Eksik verileri ortalama değer ile doldurma
+ortalama <- mean(veri$F_Dagilimi, na.rm = TRUE)
+veri$F_Dagilimi[eksik_veriler] <- ortalama
+
+# Eksik verileri medyan ile doldurmak için:
+medyan <- median(veri$F_Dagilimi, na.rm = TRUE)
+veri$F_Dagilimi[eksik_veriler] <- medyan
+
+# Vektör oluşturma
+f_dagilim_vektor <- veri$F_Dagilimi
+
+# Oluşturulan vektörün ilk 20 gözlemini gösterme
+print(f_dagilim_vektor[1:20])
+
+# Veri setinin özet istatistiklerini alma
+summary(veri$F_Dagilimi)
+
+# Kutu grafiği çizerek aykırı değerleri görselleştirme
+boxplot(veri$F_Dagilimi, main = "F Dağılımı Kutu Grafiği")
+
+# Aykırı değerlerin tespiti için çeyrekler arası aralığı kullanma
+Q1 <- quantile(veri$F_Dagilimi, 0.25)
+Q3 <- quantile(veri$F_Dagilimi, 0.75)
+IQR <- Q3 - Q1
+
+# Alt ve üst sınırları hesaplama
+alt_sinir <- Q1 - 1.5 * IQR
+ust_sinir <- Q3 + 1.5 * IQR
+
+# Aykırı değerleri tespit etme
+aykirilar <- veri$F_Dagilimi[veri$F_Dagilimi < alt_sinir | veri$F_Dagilimi > ust_sinir]
+
+# Aykırı değerleri gösterme
+print("Aykırı Değerler:")
+print(aykirilar)
+
+# QQ plot çizme
+qqnorm(veri$F_Dagilimi)
+qqline(veri$F_Dagilimi)
+
+# Shapiro-Wilk normalite testi
+shapiro.test(veri$F_Dagilimi)
+
+# Histogram çizme
+hist(f_dagilim, breaks = 20, main = "F Dağılımı", xlab = "Değerler")
+
+
+
+#Hazır Verilerin Analizi
+#ISMEN hisse senedinin bir yıllık kapanış verilerinin analizi
+
+#Verinin görüntülenmesi
+View(tumhisse)
+names(tumhisse)
+
+#aykırı değer tespiti
+# Örnek veri setini oluşturma
+set.seed(123)
+data <- rnorm(100)
+
+# Kutu grafiği oluşturma
+boxplot(data)
+sort(data)
+
+# Z-puanı hesaplama
+z_scores <- scale(data)
+
+# Aykırı değerleri belirleme
+outliers <- abs(z_scores) > 2
+
+# Alt ve üst çeyreklikleri hesaplama
+Q1 <- quantile(data, 0.25)
+Q3 <- quantile(data, 0.75)
+
+# Alt ve üst sınırı hesaplama
+IQR <- Q3 - Q1
+lower_bound <- Q1 - 1.5 * IQR
+upper_bound <- Q3 + 1.5 * IQR
+
+
+# Aykırı değerleri belirleme
+outliers <- data < lower_bound | data > upper_bound
+
+
+# Histogram oluşturma
+hist(data)
